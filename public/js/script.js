@@ -217,7 +217,7 @@ const handleReport = (job_id, job_title) => {
 	const isDevelopment = window.location.href.includes("localhost");
 
 	const baseUrl = isDevelopment
-		? `${window.location.origin}/findUrJob`
+		? `${window.location.origin}/aspire`
 		: window.location.origin;
 
 	let url = `${baseUrl}/job/report`;
@@ -387,8 +387,6 @@ if(document.body.contains(homeIcon)) {
 
 }
 
-
-
 /**
  * @type {HTMLElement}
  */
@@ -404,6 +402,12 @@ document.addEventListener("scroll", () => {
 	smoothScroll.style.cssText = "bottom: 5rem";
 });
 
+/**
+ * @function initSelect2
+ * Initializes the Select2 plugin on the multipleFilter element.
+ *
+ * @return {*|jQuery}
+ */
 initSelect2 = () => {
 	return $(".multipleFilter").select2({
 		placeholder: "Clique aqui para selecionar filtros pré-definidos",
@@ -415,27 +419,14 @@ initSelect2 = () => {
 };
 
 $(document).ready(function () {
-	const select2Instance = initSelect2();
+	initSelect2();
 
-	$(".multipleFilter").on("select2:select", function (e) {
-		const option = e.params.data.element;
-		const optgroup = $(option).closest("optgroup");
-
-		optgroup.find("option:selected").each(function () {
-			if (this !== option) {
-				$(this).prop("selected", false);
-			}
-		});
-
-		select2Instance.trigger("change");
-	});
-
-	$(".multipleFilter").on("select2:unselect", function (e) {
-		select2Instance.trigger("change");
-	});
-
-	$("#multipleFilter").change(function () {
-		let selectedValues = $(this).val();
+    /**
+     * @event change
+     * Dispatches when the value of the multipleFilter element changes.
+     */
+	$("#multipleFilter").on("change", function () {
+		let selectedValues = $(this).val() || [];
 
 		let valueMapping = {
 			estagio: "job_level",
@@ -455,11 +446,29 @@ $(document).ready(function () {
 
 		let attributes = {};
 
+		/* Mapping the selected values to their corresponding attributes */
 		selectedValues.forEach(function (value) {
-			if (valueMapping[value]) {
-				attributes[valueMapping[value]] = value;
+			let key = valueMapping[value];
+			if (key) {
+				if (!attributes[key]) {
+					attributes[key] = [];
+				}
+				attributes[key].push(value);
 			}
 		});
+
+        /* If no values are selected, reset the search input and submit the form */
+        if (selectedValues.length === 0) {
+            let search = document.querySelector("#search"),
+                formFilter = document.querySelector("#form-filter");
+
+            search.value = "";
+            setTimeout(() => {
+                formFilter.submit();
+                location.reload();
+            }, 1000);
+            return;
+        }
 
 		$.ajax({
 			type: "POST",
@@ -469,21 +478,19 @@ $(document).ready(function () {
 				$("#loaderOverlay").addClass("is-active");
 			},
 			success: (data) => {
-				console.log(data, attributes);
-
 				data = data.replace(
 					/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
 					""
 				);
 
-				let selectedValues = $("#multipleFilter").val();
+				$("#jobList").html($(data).find("#jobList").html());
 
-				$("#jobContent").html("");
+				$("#multipleFilter").select2('destroy');
+				initSelect2();
 
-				$("#jobContent").html(data);
-				$("#multipleFilter").select2(); 
-				if (selectedValues) {
-					$("#multipleFilter").val(selectedValues).trigger("change"); 
+				/* If having a selected value, set it to the select2 */
+				if (selectedValues.length > 0) {
+					$("#multipleFilter").val(selectedValues).trigger("change.select2");
 				}
 			},
 			complete: function () {

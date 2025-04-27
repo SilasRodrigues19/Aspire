@@ -46,7 +46,6 @@ public function showJob($searchTerm = false, $whereClause = false)
 
   public function showJobCount($searchTerm = false)
   {
-
     $where = false;
 
     if($searchTerm) {
@@ -57,9 +56,7 @@ public function showJob($searchTerm = false, $whereClause = false)
 
     //echo $select; exit();
 
-    
     $execute = $this->db->query($select);
-
 
     return ($execute->num_rows() > 0) ? $execute->result_array() : array();
   }
@@ -80,17 +77,16 @@ public function showJob($searchTerm = false, $whereClause = false)
     $execute = $this->db->query($delete);
 
     if($execute) {
-      return array(
-                'success' => true,
-                'msg' => 'A vaga foi deletada com sucesso',
-            );
+      return array (
+            'success' => true,
+            'msg' => 'A vaga foi deletada com sucesso',
+        );
     } else {
-      return array(
-                'success' => false,
-                'msg' => 'Erro ao deletar vaga',
-            );
+      return array (
+            'success' => false,
+            'msg' => 'Erro ao deletar vaga',
+        );
     }
-    
   }
 
   public function totalArchivedJobs()
@@ -124,7 +120,6 @@ public function showJob($searchTerm = false, $whereClause = false)
     $execute = $this->db->query($insert);
 
     return ($execute) ? true : false;
-
   }
 
   public function updateJob($dados, $job_id)
@@ -224,7 +219,7 @@ public function showJob($searchTerm = false, $whereClause = false)
                 ";
 
     $execute = $this->db->query($select);
-    
+
     return ($execute->num_rows() > 0) ? $execute->result_array() : array();
 
   }
@@ -242,9 +237,9 @@ public function showJob($searchTerm = false, $whereClause = false)
 
     $execute = $this->db->query($verify);
 
-    
+
     if($execute->num_rows() > 0) {
-      
+
       $result_array = $execute->result_array();
       $job_title = $result_array[0]['job_title'];
 
@@ -255,20 +250,17 @@ public function showJob($searchTerm = false, $whereClause = false)
 
       $execute = $this->db->query($insert);
 
-      return array(
-                'success' => true,
-                'msg' => 'A vaga <strong>' . $job_title . '</strong> foi reportada',
-            );
+      return array (
+            'success' => true,
+            'msg' => 'A vaga <strong>' . $job_title . '</strong> foi reportada',
+        );
 
     } else {
-      return array(
-                'success' => false,
-                'msg' => 'O ID informado não foi localizado',
-            );
+      return array (
+            'success' => false,
+            'msg' => 'O ID informado não foi localizado',
+        );
     }
-
-    
   }
 
-  
 }

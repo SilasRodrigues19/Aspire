@@ -58,12 +58,18 @@ class Job extends MY_Controller
             $whereClauses = [];
 
             foreach ($attributes as $column => $value) {
-                $whereClauses[] = "$column = '" . addslashes($value) . "'";
+                if (is_array($value)) {
+                    $escapedValues = array_map(function($v) {
+                        return "'" . addslashes($v) . "'";
+                    }, $value);
+
+                    $whereClauses[] = "$column IN (" . implode(',', $escapedValues) . ")";
+                } else {
+                    $whereClauses[] = "$column = '" . addslashes($value) . "'";
+                }
             }
 
             $whereClause = implode(' AND ', $whereClauses);
-
-            //echo $whereClause; exit;
 
             return $whereClause;
         } else {
@@ -243,186 +249,200 @@ class Job extends MY_Controller
 
         $isValid = true;
 
-        foreach ($messages as $key => $message):
-            if (empty($data[$key]) && isset($data['send'])):
-                notify('', $message, 'info');
-                $isValid = false;
-                break;
-            elseif ($key === 'job_link' && !empty($data['job_link']) && !filter_var($data['job_link'], FILTER_VALIDATE_URL)):
-                notify('', $message, 'info');
-                $isValid = false;
-                break;
-            endif;
-        endforeach;
+		foreach ($messages as $key => $message):
+				if (empty($data[$key]) && isset($data['send'])):
+						notify('', $message, 'info');
+						$isValid = false;
+						break;
+				elseif ($key === 'job_link' && !empty($data['job_link']) && !filter_var($data['job_link'], FILTER_VALIDATE_URL)):
+						notify('', $message, 'info');
+						$isValid = false;
+						break;
+				endif;
+		endforeach;
 
-        if($isValid && !empty($data['job_title'])) {
-            $res = $this->mjob->addJob($data);
 
-            if($res) {
-                notify('', 'Vaga adicionada', 'success');
-                redirect('/');
-            }
-        }
+		if($isValid && !empty($data['job_title'])) {
+			$res = $this->mjob->addJob($data);
 
-        $this->load->view('templates/header', $data);
-        $this->load->view('pages/edit', $data);
-        $this->load->view('templates/footer', $data);
-    }
+				if($res) {
+					notify('', 'Vaga adicionada', 'success');
+					redirect('/');
+				}
+		}
 
-    public function about()
-    {
-        $this->generateBreadcrumb();
-        $data['breadcrumb_default_style'] = $this->breadcrumb->generate();
+		$this->load->view('templates/header', $data);
+		$this->load->view('pages/edit', $data);
+		$this->load->view('templates/footer', $data);
+	}
 
-        $data['title'] = 'Sobre';
+	public function about()
+	{
 
-        $this->load->view('templates/header', $data);
-        $this->load->view('pages/about', $data);
-        $this->load->view('templates/footer', $data);
-    }
+		$this->generateBreadcrumb();
+		$data['breadcrumb_default_style'] = $this->breadcrumb->generate();
 
-    public function report()
-    {
-        $this->generateBreadcrumb();
-        $data['breadcrumb_default_style'] = $this->breadcrumb->generate();
+		$data['title'] = 'Sobre';
 
-        $data['title'] = 'Denuncie';
+		$this->load->view('templates/header', $data);
+		$this->load->view('pages/about', $data);
+		$this->load->view('templates/footer', $data);
+	}
 
-        $dados['report_job_id']      = $this->input->post('report_job_id');
-        $dados['report_reason']      = $this->input->post('report_reason');
-        $dados['report_observation'] = $this->input->post('report_observation');
+	public function report()
+	{
 
-        if (!empty($this->input->post('report_job_id'))) {
-            $res = $this->mjob->reportJob($dados);
+		$this->generateBreadcrumb();
+		$data['breadcrumb_default_style'] = $this->breadcrumb->generate();
 
-            if($res['success']) {
-                notify('', $res['msg'], 'success');
-                redirect('/job/report');
-            } else {
-                notify('', $res['msg'], 'error');
-                redirect('/job/report');
-            }
-        }
+		$data['title'] = 'Denuncie';
 
-        if($this->input->server('REQUEST_METHOD') == 'POST' && empty($this->input->post('report_job_id'))) {
-            notify('', 'Informe o ID da vaga', 'info');
-        }
+		$dados['report_job_id'] = $this->input->post('report_job_id');
+		$dados['report_reason'] = $this->input->post('report_reason');
+		$dados['report_observation'] = $this->input->post('report_observation');
 
-        $this->load->view('templates/header', $data);
-        $this->load->view('pages/report', $data);
-        $this->load->view('templates/footer', $data);
-    }
 
-    public function archived()
-    {
-        $this->generateBreadcrumb();
-        $data['breadcrumb_default_style'] = $this->breadcrumb->generate();
+		if (!empty($this->input->post('report_job_id'))) {
+			$res = $this->mjob->reportJob($dados);
 
-        $res                       = $this->mjob->totalArchivedJobs();
-        $data['countArchivedJobs'] = $res[0];
+			if($res['success']) {
+				notify('', $res['msg'], 'success');
+				redirect('/job/report');
+			} else {
+				notify('', $res['msg'], 'error');
+				redirect('/job/report');
+			}
 
-        $res                  = $this->mjob->archivedJobs();
-        $data['archivedJobs'] = $res;
+		} 
 
-        $id = $this->input->post('archivejob_id');
+		if($this->input->server('REQUEST_METHOD') == 'POST' && empty($this->input->post('report_job_id'))) {
+			notify('', 'Informe o ID da vaga', 'info');
+		}
 
-        if(!empty($this->input->post('archivejob_id'))) {
-            $res                = $this->mjob->archiveJob($id);
-            $data['archiveJob'] = $res;
+		$this->load->view('templates/header', $data);
+		$this->load->view('pages/report', $data);
+		$this->load->view('templates/footer', $data);
+	}
 
-            if($res) {
-                notify('', 'Vaga desarquivada', 'success');
-                redirect('/job');
-            }
-        }
+	public function archived()
+	{
 
-        $data['title'] = 'Vagas arquivadas ' . '(' . $data['countArchivedJobs']['countArchivedJobs'] . ')' ;
+		$this->generateBreadcrumb();
+		$data['breadcrumb_default_style'] = $this->breadcrumb->generate();
 
-        $this->is_logged_in();
+		$res = $this->mjob->totalArchivedJobs();
+		$data['countArchivedJobs'] = $res[0];
 
-        $this->load->view('templates/header', $data);
-        $this->load->view('pages/archived', $data);
-        $this->load->view('templates/footer', $data);
-    }
+		$res = $this->mjob->archivedJobs();
+		$data['archivedJobs'] = $res;
 
-    public function published()
-    {
-        $this->generateBreadcrumb();
-        $data['breadcrumb_default_style'] = $this->breadcrumb->generate();
+		$id = $this->input->post('archivejob_id');
 
-        $this->is_logged_in();
+		if(!empty($this->input->post('archivejob_id'))) {
+			$res = $this->mjob->archiveJob($id);
+			$data['archiveJob'] = $res;
 
-        $data['title'] = 'Minhas vagas publicadas';
+			if($res) {
+				notify('', 'Vaga desarquivada', 'success');
+				redirect('/job');
+			}
 
-        $res                                     = $this->mjob->getPublishedJobsByUser();
-        $data['showPublishedJobsByLoggedInUser'] = $res;
+		}
 
-        $this->load->view('templates/header', $data);
-        $this->load->view('pages/published', $data);
-        $this->load->view('templates/footer', $data);
-    }
 
-    public function reported()
-    {
-        $this->generateBreadcrumb();
-        $data['breadcrumb_default_style'] = $this->breadcrumb->generate();
+		$data['title'] = 'Vagas arquivadas ' . '(' .$data['countArchivedJobs']['countArchivedJobs']. ')' ;
 
-        $this->is_logged_in();
+		$this->is_logged_in();
 
-        $data['title'] = 'Vagas reportadas';
+		$this->load->view('templates/header', $data);
+		$this->load->view('pages/archived', $data);
+		$this->load->view('templates/footer', $data);
+	}
 
-        $res                      = $this->mjob->getReportedJobs();
-        $data['listReportedJobs'] = $res;
+	public function published()
+	{
 
-        $this->load->view('templates/header', $data);
-        $this->load->view('pages/reported', $data);
-        $this->load->view('templates/footer', $data);
-    }
+		$this->generateBreadcrumb();
+		$data['breadcrumb_default_style'] = $this->breadcrumb->generate();
 
-    public function forgot_password()
-    {
-        $this->redirectIfLoggedIn();
+		$this->is_logged_in();
+		
+		$data['title'] = 'Minhas vagas publicadas';
 
-        $email = $this->input->post('email');
+		$res = $this->mjob->getPublishedJobsByUser();
+		$data['showPublishedJobsByLoggedInUser'] = $res;
 
-        $data['token'] = $this->input->get('token');
-        $data['email'] = $this->input->get('email');
+		$this->load->view('templates/header', $data);
+		$this->load->view('pages/published', $data);
+		$this->load->view('templates/footer', $data);
+	}
 
-        $dynamicTitle  = isset($data['token']) ? 'Altere sua senha' : 'Solicitar redefinição de senha';
-        $data['title'] = $dynamicTitle;
+	public function reported()
+	{
 
-        // Mocked email
-        // $email = 'silasrodrigues.fatec@gmail.com';
+		$this->generateBreadcrumb();
+		$data['breadcrumb_default_style'] = $this->breadcrumb->generate();
+		
+		$this->is_logged_in();
 
-        $res                  = $this->mauth->getEmailSecret();
-        $dados['emailSecret'] = $res;
+		$data['title'] = 'Vagas reportadas';
 
-        if(!empty($email)) {
-            $dados['email'] = $email;
-            $res            = $this->mauth->validateMail($dados);
+		$res = $this->mjob->getReportedJobs();
+		$data['listReportedJobs'] = $res;
 
-            if($res['success']) {
-                $token     = bin2hex(random_bytes(32));
-                $resetLink = base_url('job/forgot-password?token=' . $token . '&email=' . urlencode($email));
+		$this->load->view('templates/header', $data);
+		$this->load->view('pages/reported', $data);
+		$this->load->view('templates/footer', $data);
+	}
 
-                $email_config = [
-                    'protocol'    => 'smtp',
-                    'smtp_host'   => 'smtp.gmail.com',
-                    'smtp_port'   => '587',
-                    'smtp_crypto' => 'tls',
-                    'smtp_user'   => 'silasrodrigues.fatec@gmail.com',
-                    'smtp_pass'   => $dados['emailSecret'],
-                    'mailtype'    => 'html',
-                    'starttls'    => true,
-                    'newline'     => "\r\n"
-                ];
 
-                $this->load->library('email', $email_config);
+	public function forgot_password()
+	{
 
-                $this->email->from('silasrodrigues.fatec@gmail.com');
-                $this->email->to($email);
-                $this->email->subject('Solicitação de redefinir a senha');
-                $this->email->message('
+			$this->redirectIfLoggedIn();
+
+			$email = $this->input->post('email');
+			
+
+			$data['token'] = $this->input->get('token');
+			$data['email'] = $this->input->get('email');
+			
+			$dynamicTitle = isset($data['token']) ? 'Altere sua senha' : 'Solicitar redefinição de senha';
+      $data['title'] = $dynamicTitle;
+
+			// Mocked email
+			// $email = 'silasrodrigues.fatec@gmail.com';
+
+			$res = $this->mauth->getEmailSecret();
+			$dados['emailSecret'] = $res;
+
+			if(!empty($email)) {
+					$dados['email'] = $email;
+					$res = $this->mauth->validateMail($dados);
+					
+					if($res['success']) {
+							$token = bin2hex(random_bytes(32));
+							$resetLink = base_url('job/forgot-password?token=' . $token . '&email=' . urlencode($email));
+
+							$email_config = [
+								'protocol'   => 'smtp',
+								'smtp_host'  => 'smtp.gmail.com',
+								'smtp_port'  => '587',
+								'smtp_crypto'=> 'tls',
+								'smtp_user'  => 'silasrodrigues.fatec@gmail.com',
+								'smtp_pass'  => $dados['emailSecret'],
+								'mailtype'   => 'html',
+								'starttls'   => true,
+								'newline'    => "\r\n"
+							];
+
+
+							$this->load->library('email', $email_config);
+
+							$this->email->from('silasrodrigues.fatec@gmail.com');
+							$this->email->to($email);
+							$this->email->subject('Solicitação de redefinir a senha');
+							$this->email->message('
 																		<table role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
 																			<tbody>
 																				<tr>
@@ -500,148 +520,158 @@ class Job extends MY_Controller
 																		</div>
 																');
 
-                // echo $this->email->print_debugger();
 
-                if ($this->email->send()) {
-                    notify('', 'Link enviado para o e-mail informado', 'success');
-                } else {
-                    notify('', 'Falha ao enviar o link', 'error');
-                }
-            } else {
-                notify('', $res['error'], 'error');
-            }
-        }
+							// echo $this->email->print_debugger();
 
-        $data['newPassword'] = $this->input->post('password');
-        $data['cPassword']   = $this->input->post('confirm_password');
-        $data['send']        = $this->input->post('send');
+							if ($this->email->send()) {
+									notify('', 'Link enviado para o e-mail informado', 'success');
+							} else {
+									notify('', 'Falha ao enviar o link', 'error');
+							}
+					} else {
+							notify('', $res['error'], 'error');
+					}
+			}
 
-        $messages = [
-            'email' => 'Informe o e-mail',
-        ];
+			$data['newPassword'] = $this->input->post('password');
+			$data['cPassword'] = $this->input->post('confirm_password');
+			$data['send'] = $this->input->post('send');
 
-        foreach($messages as $key => $message):
-            (empty($data[$key]) && !isset($data['send']) && !isset($data['token'])) && notify('', $message, 'info');
-        endforeach;
+			$messages = [
+				'email' => 'Informe o e-mail',
+			];
 
-        if(empty($data['newPassword']) && isset($data['send']) && isset($data['token'])) {
-            notify('', 'Informe sua nova senha', 'info');
-        }
+			foreach($messages as $key => $message):
+				(empty($data[$key]) && !isset($data['send']) && !isset($data['token'])) && notify('', $message, 'info');
+			endforeach;
 
-        if (!empty($data['newPassword']) && isset($data['token']) && strlen(trim($data['token'])) === 64 && isset($data['send'])) {
-            if (strcmp($data['newPassword'], $data['cPassword']) === 0) {
-                $res = $this->mauth->resetPassword($data);
+			if(empty($data['newPassword']) && isset($data['send']) && isset($data['token'])) {
+				notify('', 'Informe sua nova senha', 'info');
+			}
 
-                if ($res['success']) {
-                    notify('', $res['msg'], 'success');
-                    redirect('/job/signin');
-                } else {
-                    notify('', $res['msg'], 'error');
-                    redirect('/job/forgot-password');
-                }
-            } else {
-                notify('', 'As senhas não são iguais', 'error');
-                //redirect(base_url('job/forgot-password?token=' . $data['token'] . '&email=' . urlencode($data['email'])));
-            }
-        }
+			if (!empty($data['newPassword']) && isset($data['token']) && strlen(trim($data['token'])) === 64 && isset($data['send'])) {
+					if (strcmp($data['newPassword'], $data['cPassword']) === 0) {
+							$res = $this->mauth->resetPassword($data);
 
-        $this->load->view('templates/header', $data);
-        $this->load->view('pages/auth/forgot-password', $data);
-        $this->load->view('templates/footer', $data);
-    }
+							if ($res['success']) {
+									notify('', $res['msg'], 'success');
+									redirect('/job/signin');
+							} else {
+									notify('', $res['msg'], 'error');
+									redirect('/job/forgot-password');
+							}
+					} else {
+							notify('', 'As senhas não são iguais', 'error');
+							//redirect(base_url('job/forgot-password?token=' . $data['token'] . '&email=' . urlencode($data['email'])));
+					}
+			}
 
-    public function signup()
-    {
-        $data['title'] = 'Realize seu cadastro';
 
-        $this->redirectIfLoggedIn();
+			$this->load->view('templates/header', $data);
+			$this->load->view('pages/auth/forgot-password', $data);
+			$this->load->view('templates/footer', $data);
+	}
 
-        $data['email']    = $this->input->post('email');
-        $data['user']     = $this->input->post('user');
-        $data['password'] = $this->input->post('password');
-        $data['send']     = $this->input->post('send');
 
-        $messages = [
-            'password' => 'Informe a senha',
-            'user'     => 'Informe o usuário',
-            'email'    => 'Informe o e-mail',
-        ];
+	public function signup()
+	{
+			$data['title'] = 'Realize seu cadastro';
 
-        foreach ($messages as $key => $message) {
-            (empty($data[$key]) && isset($data['send'])) && notify('', $message, 'info');
-        }
+			$this->redirectIfLoggedIn();
 
-        if (!empty($this->input->post('user'))) {
-            $usernameExists = $this->mauth->checkUsernameExists($data['user']);
-            if ($usernameExists) {
-                notify('', 'Usuário já existe', 'error');
-            }
-        }
+			$data['email'] = $this->input->post('email');
+			$data['user'] = $this->input->post('user');
+			$data['password'] = $this->input->post('password');
+			$data['send'] = $this->input->post('send');
 
-        if (!empty($this->input->post('email'))) {
-            $emailExists = $this->mauth->checkEmailExists($data['email']);
-            if ($emailExists) {
-                notify('', 'E-mail já cadastrado.', 'error');
-            }
-        }
+			$messages = [
+					'password' => 'Informe a senha',
+					'user' => 'Informe o usuário',
+					'email' => 'Informe o e-mail',
+			];
 
-        if (!empty($this->input->post('user')) && !empty($this->input->post('password')) && !empty($this->input->post('email'))) {
-            if (!$usernameExists && !$emailExists) {
-                $res = $this->mauth->signUpUser($data);
-                if ($res === true) {
-                    notify('', 'Usuário cadastrado', 'success');
-                    redirect('/job/signin');
-                }
-            }
-        }
+			foreach ($messages as $key => $message) {
+					(empty($data[$key]) && isset($data['send'])) && notify('', $message, 'info');
+			}
 
-        $this->load->view('templates/header', $data);
-        $this->load->view('pages/auth/signup', $data);
-        $this->load->view('templates/footer', $data);
-    }
+			if (!empty($this->input->post('user'))) {
+					$usernameExists = $this->mauth->checkUsernameExists($data['user']);
+					if ($usernameExists) {
+							notify('', 'Usuário já existe', 'error');
+					}
+			}
 
-    public function signin()
-    {
-        $data['title'] = 'Faça login';
+			if (!empty($this->input->post('email'))) {
+					$emailExists = $this->mauth->checkEmailExists($data['email']);
+					if ($emailExists) {
+							notify('', 'E-mail já cadastrado.', 'error');
+					}
+			}
 
-        $this->redirectIfLoggedIn();
+			if (!empty($this->input->post('user')) && !empty($this->input->post('password')) && !empty($this->input->post('email'))) {
+					if (!$usernameExists && !$emailExists) {
+							$res = $this->mauth->signUpUser($data);
+							if ($res === true) {
+									notify('', 'Usuário cadastrado', 'success');
+									redirect('/job/signin');
+							}
+					}
+			}
 
-        $data['user']     = $this->input->post('user');
-        $data['password'] = $this->input->post('password');
-        $data['send']     = $this->input->post('send');
+			$this->load->view('templates/header', $data);
+			$this->load->view('pages/auth/signup', $data);
+			$this->load->view('templates/footer', $data);
+	}
 
-        $messages = [
-            'password' => 'Informe a senha',
-            'user'     => 'Informe o usuário',
-        ];
+	
+	public function signin()
+	{
+		$data['title'] = 'Faça login';
 
-        foreach($messages as $key => $message):
-            (empty($data[$key]) && isset($data['send'])) && notify('', $message, 'info');
-        endforeach;
+    $this->redirectIfLoggedIn();
 
-        if (!empty($this->input->post('user')) && !empty($this->input->post('password'))) {
-            $res = $this->mauth->signInUser($data);
+		$data['user'] = $this->input->post('user');
+		$data['password'] = $this->input->post('password');
+		$data['send'] = $this->input->post('send');
 
-            if ($res['success']) {
-                $this->session->set_userdata('usuario', $res['user']);
+		$messages = [
+			'password' => 'Informe a senha',
+			'user' => 'Informe o usuário',
+		];
 
-                notify('', 'Login realizado', 'success');
-                $redirect_url = $this->session->userdata('redirect_url') ?? '/';
-                redirect($redirect_url);
-            } else {
-                notify('', $res['error'], 'error');
-                redirect('/job/signin');
-            }
-        }
+		foreach($messages as $key => $message):
+			(empty($data[$key]) && isset($data['send'])) && notify('', $message, 'info');
+		endforeach;
 
-        $this->load->view('templates/header', $data);
-        $this->load->view('pages/auth/signin', $data);
-        $this->load->view('templates/footer', $data);
-    }
 
-    public function logout()
-    {
-        $this->session->sess_destroy();
-        redirect(base_url());
-    }
+		if (!empty($this->input->post('user')) && !empty($this->input->post('password'))) {
+			$res = $this->mauth->signInUser($data);
+
+			if ($res['success']) {
+				$this->session->set_userdata('usuario', $res['user']);
+
+				notify('', 'Login realizado', 'success');
+				$redirect_url = $this->session->userdata('redirect_url') ?? '/';
+    		redirect($redirect_url);
+
+			} else {
+				notify('', $res['error'], 'error');
+				redirect('/job/signin');
+			}
+
+
+		} 
+
+		$this->load->view('templates/header', $data);
+		$this->load->view('pages/auth/signin', $data);
+		$this->load->view('templates/footer', $data);
+	}
+
+	public function logout()
+	{
+			$this->session->sess_destroy();
+			redirect(base_url());
+	}
+
+
 }

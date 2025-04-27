@@ -90,7 +90,7 @@
 
   <h2 class="subtitle mt-4 about-text">
     O projeto é <em>open-source</em> e está hospedado no GitHub que pode ser acessado através
-    <a href="https://github.com/SilasRodrigues19/findUrJob" target="_blank">deste link.</a>
+    <a href="https://github.com/SilasRodrigues19/Aspire" target="_blank">deste link.</a>
   </h2>
 
   <script type="text/javascript">

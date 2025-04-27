@@ -12,12 +12,12 @@
     <img src="./logo.svg" alt="Logo" width="35">
   </a>
 
-  <h3 align="center" id="fuj">Find your job</h3>
+  <h3 align="center" id="fuj">Aspire</h3>
 
   <p align="center">
-    <a href="https://findurjobteste.000webhostapp.com/">Demo</a>
+    <a href="https://aspireteste.000webhostapp.com/">Demo</a>
     &#124;	
-    <a href="https://github.com/SilasRodrigues19/findUrJob/issues">Report Bug</a>
+    <a href="https://github.com/SilasRodrigues19/Aspire/issues">Report Bug</a>
   </p>
 
   <p align="center">
@@ -51,11 +51,11 @@
 
 | Sign Up | Sign In |
 | -------- | -------- |
-| [![Preview][product-screenshot6]](https://findurjobteste.000webhostapp.com/) | [![Preview][product-screenshot5]](https://findurjobteste.000webhostapp.com/) |
+| [![Preview][product-screenshot6]](https://aspireteste.000webhostapp.com/) | [![Preview][product-screenshot5]](https://aspireteste.000webhostapp.com/) |
 
 | Forgot Password - Send Token | Forgot Password  |
 | -------- | -------- |
-| [![Preview][product-screenshot7]](https://findurjobteste.000webhostapp.com/) | [![Preview][product-screenshot8]](https://findurjobteste.000webhostapp.com/) |
+| [![Preview][product-screenshot7]](https://aspireteste.000webhostapp.com/) | [![Preview][product-screenshot8]](https://aspireteste.000webhostapp.com/) |
 
 <hr>
 
@@ -63,11 +63,11 @@
 
 | Home | Archived posts |
 | -------- | -------- |
-| [![Preview][product-screenshot]](https://findurjobteste.000webhostapp.com/) | [![Preview][product-screenshot3]](https://findurjobteste.000webhostapp.com/) |
+| [![Preview][product-screenshot]](https://aspireteste.000webhostapp.com/) | [![Preview][product-screenshot3]](https://aspireteste.000webhostapp.com/) |
 | Publish opportunity | About project |
-| [![Preview][product-screenshot2]](https://findurjobteste.000webhostapp.com/) | [![Preview][product-screenshot4]](https://findurjobteste.000webhostapp.com/) |
+| [![Preview][product-screenshot2]](https://aspireteste.000webhostapp.com/) | [![Preview][product-screenshot4]](https://aspireteste.000webhostapp.com/) |
 | Report page | View reported jobs |
-| [![Preview][product-screenshot9]](https://findurjobteste.000webhostapp.com/) | [![Preview][product-screenshot10]](https://findurjobteste.000webhostapp.com/) |
+| [![Preview][product-screenshot9]](https://aspireteste.000webhostapp.com/) | [![Preview][product-screenshot10]](https://aspireteste.000webhostapp.com/) |
 
 
 The screens and features are described below:
@@ -137,21 +137,21 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Silas Rodrigues - [@jinuye1](https://twitter.com/jinuye1) - silasrodrigues.fatec@gmail.com
 
-Project Link: [https://github.com/SilasRodrigues19/findUrJob](https://github.com/SilasRodrigues19/findUrJob) <br>
+Project Link: [https://github.com/SilasRodrigues19/Aspire](https://github.com/SilasRodrigues19/Aspire) <br>
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[contributors-shield]: https://img.shields.io/github/contributors/SilasRodrigues19/findUrJob.svg?style=for-the-badge
-[contributors-url]: https://github.com/SilasRodrigues19/findUrJob/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/SilasRodrigues19/findUrJob.svg?style=for-the-badge
-[forks-url]: https://github.com/SilasRodrigues19/findUrJob/network/members
-[stars-shield]: https://img.shields.io/github/stars/SilasRodrigues19/findUrJob.svg?style=for-the-badge
-[stars-url]: https://github.com/SilasRodrigues19/findUrJob/stargazers
-[issues-shield]: https://img.shields.io/github/issues/SilasRodrigues19/findUrJob.svg?style=for-the-badge
-[issues-url]: https://github.com/SilasRodrigues19/findUrJob/issues
-[license-shield]: https://img.shields.io/github/license/SilasRodrigues19/findUrJob.svg?style=for-the-badge
-[license-url]: https://github.com/SilasRodrigues19/findUrJob/blob/master/LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/SilasRodrigues19/aspire.svg?style=for-the-badge
+[contributors-url]: https://github.com/SilasRodrigues19/Aspire/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/SilasRodrigues19/aspire.svg?style=for-the-badge
+[forks-url]: https://github.com/SilasRodrigues19/Aspire/network/members
+[stars-shield]: https://img.shields.io/github/stars/SilasRodrigues19/aspire.svg?style=for-the-badge
+[stars-url]: https://github.com/SilasRodrigues19/Aspire/stargazers
+[issues-shield]: https://img.shields.io/github/issues/SilasRodrigues19/aspire.svg?style=for-the-badge
+[issues-url]: https://github.com/SilasRodrigues19/Aspire/issues
+[license-shield]: https://img.shields.io/github/license/SilasRodrigues19/aspire.svg?style=for-the-badge
+[license-url]: https://github.com/SilasRodrigues19/Aspire/blob/master/LICENSE
 [product-screenshot]: ./public/screenshots/preview.png
 [product-screenshot2]: ./public/screenshots/preview2.png
 [product-screenshot3]: ./public/screenshots/preview3.png
@@ -162,7 +162,7 @@ Project Link: [https://github.com/SilasRodrigues19/findUrJob](https://github.com
 [product-screenshot8]: ./public/screenshots/preview8.png
 [product-screenshot9]: ./public/screenshots/preview9.png
 [product-screenshot10]: ./public/screenshots/preview10.png
-[license-url]: https://github.com/SilasRodrigues19/findUrJob/blob/master/LICENSE
+[license-url]: https://github.com/SilasRodrigues19/Aspire/blob/master/LICENSE
 
 <br><hr>
 [🔼 Back to top](#fuj)

@@ -5,21 +5,18 @@
     $_SESSION['title'] = $title;
     $_SESSION['msg'] = $msg;
     $_SESSION['type'] = $type;
-
   }
 
   function showMessage() 
   {
     if(isset($_SESSION['title'])) {
       echo alertBox($_SESSION['title'], $_SESSION['msg'], $_SESSION['type']);
-      
       unset($_SESSION['title']);
       unset($_SESSION['msg']);
       unset($_SESSION['type']);
       unset($_SESSION['width']);
     }
   }
-  
 
   function alertBox($title, $msg, $type)
   {

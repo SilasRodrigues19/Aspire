@@ -16,7 +16,6 @@
 		<link rel="stylesheet" href="<?= base_url('public/libraries/animate/animate.min.css'); ?>">
 		<link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">	
 		<link rel="stylesheet" href="<?= base_url('public/libraries/select2/select2.min.css'); ?>" />
-	
 		<link rel="stylesheet" href="<?= base_url('public/css/style.min.css'); ?>">
 		<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2619096347004252"
      crossorigin="anonymous"></script>

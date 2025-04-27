@@ -4,7 +4,7 @@
 				$currentUrl = $_SERVER['REQUEST_URI'];
 
 				$isAuthPage = strpos($currentUrl, "/signin") || strpos($currentUrl, "/signup") || strpos($currentUrl, "/forgot-password");
-				
+
 				if(!$isAuthPage):
 			?>
 				<footer class="footer">

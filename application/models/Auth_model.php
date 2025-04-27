@@ -2,7 +2,6 @@
 
 class Auth_model extends MY_Model {
 
-  
   public function checkUsernameExists($username)
   {
     $query = "SELECT COUNT(*) as count FROM users WHERE user_name = ?";
@@ -12,12 +11,12 @@ class Auth_model extends MY_Model {
   }
 
  public function checkEmailExists($email)
-  {
+ {
     $query = "SELECT COUNT(*) as count FROM users WHERE user_email = ?";
     $result = $this->db->query($query, array($email));
     $row = $result->row();
     return ($row->count > 0) ? true : false;
-  }
+ }
 
   public function signUpUser($data)
   {
@@ -49,12 +48,12 @@ class Auth_model extends MY_Model {
      $this->db->select('user_is_active');
      $this->db->where('user_name', $username);
      $select = $this->db->get('users');
-    
+
      if ($select->num_rows() > 0) {
          $user = $select->row();
          return $user->user_is_active == 1;
      }
-    
+
      return false;
   }
 
@@ -91,8 +90,6 @@ class Auth_model extends MY_Model {
     );
   }
 
-
-
   public function validateMail($dados)
   {
 
@@ -100,19 +97,16 @@ class Auth_model extends MY_Model {
     $select = $this->db->get('users');
 
     if ($select->num_rows() > 0) {
-
-        return array(
-                  'success' => true,
-                  'mail' => $dados['email'],
-              );
+        return array (
+              'success' => true,
+              'mail' => $dados['email'],
+          );
     } else {
-        return array(
-                  'success' => false,
-                  'error' => 'Email não encontrado',
-              );
+        return array (
+              'success' => false,
+              'error' => 'Email não encontrado',
+          );
     }
-
-
   }
 
   public function getEmailSecret() 
@@ -123,33 +117,26 @@ class Auth_model extends MY_Model {
       return ($execute->num_rows() > 0) ? $row->email_secret : null;
   }
 
+  public function resetPassword($data)
+  {
+    $argon_password = password_hash($data['newPassword'], PASSWORD_ARGON2I);
 
-    public function resetPassword($data)
-    {
+    $this->db->where('user_email', $this->input->get('email'));
+    $update = $this->db->update('users', array('user_password' => $argon_password));
 
-        $argon_password = password_hash($data['newPassword'], PASSWORD_ARGON2I);
+    //echo $this->db->last_query(); exit;
 
-        $this->db->where('user_email', $this->input->get('email'));
-        $update = $this->db->update('users', array('user_password' => $argon_password));
-        
-        //echo $this->db->last_query(); exit;
-
-        if ($update) {
-            return array(
-                    'success' => true,
-                    'msg' => 'Senha redefinida com sucesso',
-                );
-        } else {
-            return array(
-                    'success' => false,
-                    'msg' => 'Falha ao redefinir sua senha',
-                );
-        }
-
-        
-
+    if ($update) {
+        return array (
+            'success' => true,
+            'msg' => 'Senha redefinida com sucesso',
+        );
+    } else {
+        return array (
+            'success' => false,
+            'msg' => 'Falha ao redefinir sua senha',
+        );
     }
+  }
 
-
-  
 }

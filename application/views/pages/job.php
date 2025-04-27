@@ -164,7 +164,7 @@
       <span onclick="revertWarning();" class="iconify rollback" data-icon="grommet-icons:revert"></span>
     </div>
 
-    <div>
+    <div id="jobList">
       <?php if ($showJob) : ?>
         <?php foreach ($showJob as $idx => $value) : ?>
           <?php if (!$showJob[$idx]['job_is_archived']) : ?>
