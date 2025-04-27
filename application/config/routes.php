@@ -52,4 +52,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'job';
 $route['404_override'] = 'notfound';
 $route['logout'] = 'job/logout';
+$route['filter-selection'] = 'job';
 $route['translate_uri_dashes'] = TRUE;
+

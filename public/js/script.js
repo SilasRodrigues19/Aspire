@@ -328,55 +328,64 @@ const icons = document.querySelectorAll(".bx");
  */
 const homeIcon = document.querySelector(".backToHome");
 
-gsap.from(".boxLogin, .showMessage", {
-	opacity: 0,
-	y: 50,
-	duration: 0.5,
-	ease: "power2.out",
-});
-
-gsap.set([...inputs, ...icons], { opacity: 0, y: 30 });
-
-/**
- * Animates the opacity and position of the input fields using GSAP.
- * @param {HTMLElement} input - The input field element
- * @param {number} i - The index of the input field in the loop
- * @returns {void}
- */
-inputs.forEach((input, i) => {
-	gsap.fromTo(
-		input,
-		{ opacity: 0, y: 30 },
-		{ opacity: 1, y: 0, delay: i * 0.25, duration: 0.8, ease: "power2.out" }
-	);
-});
-
-/**
- * Animates the opacity and position of the icons using GSAP.
- * @param {HTMLElement} icon - The icon element
- * @param {number} i - The index of the icon in the loop
- * @returns {void}
- */
-icons.forEach((icon, i) => {
-	gsap.fromTo(
-		icon,
-		{ opacity: 0, y: 30 },
-		{ opacity: 1, y: 0, delay: i * 0.25, duration: 0.8, ease: "power2.out" }
-	);
-});
-
-gsap.fromTo(
-	homeIcon,
-	{ opacity: 0, top: "5%", left: "20px" },
-	{
-		opacity: 1,
-		top: "20px",
-		left: "20px",
-		delay: icons.length * 0.25,
-		duration: 0.8,
+if(document.body.contains(homeIcon) || document.body.contains(showMessage)) {
+	gsap.from(".boxLogin, .showMessage", {
+		opacity: 0,
+		y: 50,
+		duration: 0.5,
 		ease: "power2.out",
-	}
-);
+	});
+}
+
+if (inputs.length > 0 || icons.length > 0) {
+
+	gsap.set([...inputs, ...icons], { opacity: 0, y: 30 });
+
+	/**
+	 * Animates the opacity and position of the input fields using GSAP.
+	 * @param {HTMLElement} input - The input field element
+	 * @param {number} i - The index of the input field in the loop
+	 * @returns {void}
+	 */
+	inputs.forEach((input, i) => {
+		gsap.fromTo(
+			input,
+			{ opacity: 0, y: 30 },
+			{ opacity: 1, y: 0, delay: i * 0.25, duration: 0.8, ease: "power2.out" }
+		);
+	});
+
+	/**
+	 * Animates the opacity and position of the icons using GSAP.
+	 * @param {HTMLElement} icon - The icon element
+	 * @param {number} i - The index of the icon in the loop
+	 * @returns {void}
+	 */
+	icons.forEach((icon, i) => {
+		gsap.fromTo(
+			icon,
+			{ opacity: 0, y: 30 },
+			{ opacity: 1, y: 0, delay: i * 0.25, duration: 0.8, ease: "power2.out" }
+		);
+	});
+}
+
+if(document.body.contains(homeIcon)) {
+
+	gsap.fromTo(
+		homeIcon,
+		{ opacity: 0, top: "5%", left: "20px" },
+		{
+			opacity: 1,
+			top: "20px",
+			left: "20px",
+			delay: icons.length * 0.25,
+			duration: 0.8,
+			ease: "power2.out",
+		}
+	);
+
+}
 
 /**
  * @type {HTMLElement}
@@ -393,35 +402,100 @@ document.addEventListener("scroll", () => {
 	smoothScroll.style.cssText = "bottom: 5rem";
 });
 
-
+/**
+ * @function initSelect2
+ * Initializes the Select2 plugin on the multipleFilter element.
+ *
+ * @return {*|jQuery}
+ */
 initSelect2 = () => {
 	return $(".multipleFilter").select2({
 		placeholder: "Clique aqui para selecionar filtros pré-definidos",
 		allowClear: true,
 		language: {
 			noResults: () => "Nenhum resultado encontrado",
-		}
+		},
 	});
-}
+};
 
 $(document).ready(function () {
-	const select2Instance = initSelect2();
+	initSelect2();
 
-	$(".multipleFilter").on("select2:select", function (e) {
-		const option = e.params.data.element;
-		const optgroup = $(option).closest("optgroup");
+    /**
+     * @event change
+     * Dispatches when the value of the multipleFilter element changes.
+     */
+	$("#multipleFilter").on("change", function () {
+		let selectedValues = $(this).val() || [];
 
-		optgroup.find("option:selected").each(function () {
-			if (this !== option) {
-				$(this).prop("selected", false);
+		let valueMapping = {
+			estagio: "job_level",
+			trainee: "job_level",
+			junior: "job_level",
+			pleno: "job_level",
+			senior: "job_level",
+			remoto: "job_mode",
+			presencial: "job_mode",
+			hibrido: "job_mode",
+			clt: "job_contract",
+			pj: "job_contract",
+			real: "job_currency",
+			dollar: "job_currency",
+			euro: "job_currency",
+		};
+
+		let attributes = {};
+
+		/* Mapping the selected values to their corresponding attributes */
+		selectedValues.forEach(function (value) {
+			let key = valueMapping[value];
+			if (key) {
+				if (!attributes[key]) {
+					attributes[key] = [];
+				}
+				attributes[key].push(value);
 			}
 		});
 
-		select2Instance.trigger("change");
-	});
+        /* If no values are selected, reset the search input and submit the form */
+        if (selectedValues.length === 0) {
+            let search = document.querySelector("#search"),
+                formFilter = document.querySelector("#form-filter");
 
-	$(".multipleFilter").on("select2:unselect", function (e) {
-		select2Instance.trigger("change");
+            search.value = "";
+            setTimeout(() => {
+                formFilter.submit();
+                location.reload();
+            }, 1000);
+            return;
+        }
+
+		$.ajax({
+			type: "POST",
+			url: "filter-selection",
+			data: attributes,
+			beforeSend: function () {
+				$("#loaderOverlay").addClass("is-active");
+			},
+			success: (data) => {
+				data = data.replace(
+					/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+					""
+				);
+
+				$("#jobList").html($(data).find("#jobList").html());
+
+				$("#multipleFilter").select2('destroy');
+				initSelect2();
+
+				/* If having a selected value, set it to the select2 */
+				if (selectedValues.length > 0) {
+					$("#multipleFilter").val(selectedValues).trigger("change.select2");
+				}
+			},
+			complete: function () {
+				$("#loaderOverlay").removeClass("is-active");
+			},
+		});
 	});
 });
-

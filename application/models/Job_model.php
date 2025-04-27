@@ -2,13 +2,20 @@
 
 class Job_model extends MY_Model {
 
-  public function showJob($searchTerm = false)
-  {
 
+public function showJob($searchTerm = false, $whereClause = false)
+{
     $where = false;
 
-    if($searchTerm) {
-      $where = "WHERE CONCAT(job_title, job_requirements, job_link, job_level, job_salary, job_currency, job_mode, job_contract) LIKE '%{$searchTerm}%'";
+    if ($searchTerm && $whereClause) {
+
+        $where = "WHERE CONCAT(job_title, job_requirements, job_link, job_email, job_level, job_salary, job_currency, job_mode, job_contract) LIKE '%{$searchTerm}%' AND {$whereClause}";
+    } elseif ($searchTerm) {
+
+        $where = "WHERE CONCAT(job_title, job_requirements, job_link, job_email, job_level, job_salary, job_currency, job_mode, job_contract) LIKE '%{$searchTerm}%'";
+    } elseif ($whereClause) {
+
+        $where = "WHERE {$whereClause}";
     }
 
     $select = "SELECT *, DATE_FORMAT(created_at, '%d/%m/%Y') AS dateString, DATE_FORMAT(created_at, '%H:%i:%s') AS timeString,
@@ -19,12 +26,14 @@ class Job_model extends MY_Model {
       END AS job_currency_symbol
     FROM jobs {$where}";
 
-    //echo $select; exit();
+    #echo $select; exit;
 
     $execute = $this->db->query($select);
+    
 
     return ($execute->num_rows() > 0) ? $execute->result_array() : array();
-  }
+}
+
 
   public function getJobById($job_id) 
   {

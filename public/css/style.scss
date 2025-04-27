@@ -61,7 +61,10 @@ li {
 	color: #fff;
 }
 
-.select2-container--default .select2-selection--multiple, .select2-container--default .select2-results>.select2-results__options, span.select2-dropdown.select2-dropdown--below {
+.select2-container--default .select2-selection--multiple, .select2-container--default 
+.select2-results>.select2-results__options, 
+span.select2-dropdown.select2-dropdown--below,
+span.select2-dropdown.select2-dropdown--above {
 	width: 30rem !important;
 }
 

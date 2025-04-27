@@ -1,4 +1,12 @@
-<main class="is-widescreen is-fullhd has-background-light	hero is-fullheight">
+<main id="jobContent" class="is-widescreen is-fullhd has-background-light	hero is-fullheight">
+
+  <div id="loaderOverlay" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content has-text-centered">
+      <span class="iconify is-large" data-icon="line-md:loading-loop" data-width="100"data-height="100"></span>
+    </div>
+  </div>
+
   <nav class="level p-4 has-position-fixed-on-top w-100 navbar" role="navigation" aria-label="main navigation">
 
     <a role="button" class="navbar-burger nav-toggle" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
@@ -126,7 +134,7 @@
 
      <div class="columns">
         <div class="column is-full">
-          <select class="multipleFilter" name="filters[]" multiple>
+          <select id="multipleFilter" class="multipleFilter" name="filters[]" multiple>
             <optgroup label="Senioridade">
               <option value="estagio">Estágio</option>
               <option value="trainee">Trainee</option>
@@ -156,7 +164,7 @@
       <span onclick="revertWarning();" class="iconify rollback" data-icon="grommet-icons:revert"></span>
     </div>
 
-    <div>
+    <div id="jobList">
       <?php if ($showJob) : ?>
         <?php foreach ($showJob as $idx => $value) : ?>
           <?php if (!$showJob[$idx]['job_is_archived']) : ?>
